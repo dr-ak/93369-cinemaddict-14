@@ -98,7 +98,7 @@ if (filmCards.length > 0) {
     render(topRatedfilmsList, new FilmsListContainer().getElement(), RenderPosition.BEFOREEND);
     const topRatedfilmListContainer = topRatedfilmsList.querySelector('.films-list__container');
     topRatedfilmCards.forEach(
-      (topRatedfilmCard) => render(topRatedfilmListContainer, new FilmCard(topRatedfilmCard).getElement(), RenderPosition.BEFOREEND));
+      (topRatedfilmCard) => renderFilmCard(topRatedfilmListContainer, topRatedfilmCard));
   }
 
   const mostCommentedfilmCards = filmCards
@@ -112,7 +112,7 @@ if (filmCards.length > 0) {
     render(mostCommentedfilmsList, new FilmsListContainer().getElement(), RenderPosition.BEFOREEND);
     const mostCommentedfilmListContainer = mostCommentedfilmsList.querySelector('.films-list__container');
     mostCommentedfilmCards.forEach(
-      (mostCommentedfilmCard) => render(mostCommentedfilmListContainer, new FilmCard(mostCommentedfilmCard).getElement(), RenderPosition.BEFOREEND));
+      (mostCommentedfilmCard) => renderFilmCard(mostCommentedfilmListContainer, mostCommentedfilmCard));
   }
 } else {
   render(main, new Nav(stat).getElement(), RenderPosition.AFTERBEGIN);
