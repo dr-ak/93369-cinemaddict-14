@@ -30,13 +30,24 @@ const renderFilmCard = (container, filmCard) => {
   const filmCardElement = new FilmCard(filmCard).getElement();
   const popupElement = new Popup(filmCard).getElement();
 
+  const closePopup = () => {
+    body.removeChild(popupElement);
+    body.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', onEscKeyDown);
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      closePopup();
+    }
+  };
+
   const showPopup = () => {
-    popupElement.querySelector('.film-details__close-btn').addEventListener('click', () =>{
-      body.removeChild(popupElement);
-      body.classList.remove('hide-overflow');
-    });
+    popupElement.querySelector('.film-details__close-btn').addEventListener('click', closePopup);
     body.classList.add('hide-overflow');
     body.appendChild(popupElement);
+    document.addEventListener('keydown', onEscKeyDown);
   };
 
   filmCardElement.querySelector('.film-card__poster').addEventListener('click', showPopup);
