@@ -1,3 +1,4 @@
+import {createElement} from '../utils.js';
 import {extractYearFromDate} from '../utils.js';
 
 export const createFilmCard = (filmCard) => {
@@ -37,3 +38,26 @@ export const createFilmCard = (filmCard) => {
     </div>
   </article>`;
 };
+
+export default class FilmCard {
+  constructor(filmCard) {
+    this._filmCard = filmCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCard(this._filmCard);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

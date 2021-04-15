@@ -1,3 +1,4 @@
+import {createElement} from '../utils.js';
 import {humanizeFilmDate, humanizeCommentDate} from '../utils.js';
 import {generateComment} from '../mock/comment.js';
 
@@ -176,3 +177,26 @@ export const createPopup = (filmCard) => {
     </form>
   </section>`;
 };
+
+export default class Popup {
+  constructor(filmCard) {
+    this._filmCard = filmCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPopup(this._filmCard);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
