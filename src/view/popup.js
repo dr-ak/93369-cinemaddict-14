@@ -1,6 +1,6 @@
-import {createElement} from '../utils.js';
 import {humanizeFilmDate, humanizeCommentDate} from '../utils.js';
 import {generateComment} from '../mock/comment.js';
+import AbstractView from './abstract.js';
 
 const commentsList = new Array(5).fill().map(generateComment);
 
@@ -178,25 +178,41 @@ export const createPopup = (filmCard) => {
   </section>`;
 };
 
-export default class Popup {
+export default class Popup extends AbstractView {
   constructor(filmCard) {
+    super();
     this._filmCard = filmCard;
-    this._element = null;
+    this._parentElem = null;
+    this._onEscKeyDown = null;
+    this._filmCardCloseBtnHandler = this._filmCardCloseBtnHandler.bind(this);
+    this.close = this.close.bind(this);
   }
 
   getTemplate() {
     return createPopup(this._filmCard);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _filmCardCloseBtnHandler() {
+    this._callback.filmCardCloseBtn();
   }
 
-  removeElement() {
-    this._element = null;
+  _setFilmCardCloseBtnHandler(callback) {
+    this._callback.filmCardCloseBtn = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._filmCardCloseBtnHandler);
+  }
+
+  close() {
+    this._parentElem.removeChild(this.getElement());
+    this._parentElem.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', this._onEscKeyDown);
+  }
+
+  show(elem, onEscKeyDown) {
+    this._parentElem = elem;
+    this._onEscKeyDown = onEscKeyDown;
+    this._setFilmCardCloseBtnHandler(this.close);
+    this._parentElem.classList.add('hide-overflow');
+    this._parentElem.appendChild(this.getElement());
+    document.addEventListener('keydown', this._onEscKeyDown);
   }
 }

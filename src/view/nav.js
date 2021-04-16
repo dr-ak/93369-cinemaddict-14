@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 export const createNav = (stat) => {
   const {watchList, history, favorites} = stat;
@@ -13,25 +13,13 @@ export const createNav = (stat) => {
   </nav>`;
 };
 
-export default class Nav {
+export default class Nav extends AbstractView {
   constructor(stat) {
+    super();
     this._stat = stat;
-    this._element = null;
   }
 
   getTemplate() {
     return createNav(this._stat);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
