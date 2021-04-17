@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomInteger, getRandomElement} from '../utils.js';
+import {getRandomInteger, getRandomElement} from '../utils/common.js';
 
 const people = [
   'Tom Ford',

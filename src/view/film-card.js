@@ -1,4 +1,4 @@
-import {extractYearFromDate} from '../utils.js';
+import {extractYearFromDate} from '../utils/film.js';
 import AbstractView from './abstract.js';
 
 export const createFilmCard = (filmCard) => {

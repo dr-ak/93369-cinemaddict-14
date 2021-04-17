@@ -1,4 +1,4 @@
-import {humanizeFilmDate, humanizeCommentDate} from '../utils.js';
+import {humanizeFilmDate, humanizeCommentDate} from '../utils/film.js';
 import {generateComment} from '../mock/comment.js';
 import AbstractView from './abstract.js';
 
