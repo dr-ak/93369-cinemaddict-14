@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 export const createFilmsList = (title = '', id = '') => {
   let visuallyHiddenClass = 'visually-hidden';
@@ -14,26 +14,14 @@ export const createFilmsList = (title = '', id = '') => {
   </section>`;
 };
 
-export default class FilmsList {
+export default class FilmsList extends AbstractView {
   constructor(title, id) {
+    super();
     this._title = title;
     this._id = id;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmsList(this._title, this._id);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomInteger, getRandom, getRandomElement, getRandomElements} from '../utils.js';
+import {getRandomInteger, getRandom, getRandomElement, getRandomElements} from '../utils/common.js';
 
 const commentIds = [0, 1, 2, 3, 4];
 const titles = [
