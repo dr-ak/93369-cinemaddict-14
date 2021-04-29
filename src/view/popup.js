@@ -2,6 +2,11 @@ import {humanizeFilmDate, humanizeCommentDate} from '../utils/film.js';
 import {generateComment} from '../mock/comment.js';
 import AbstractView from './abstract.js';
 
+const States = {
+  OPENED: 'OPENED',
+  CLOSED: 'CLOSED',
+};
+
 const commentsList = new Array(5).fill().map(generateComment);
 
 export const createPopup = (filmCard) => {
@@ -179,40 +184,71 @@ export const createPopup = (filmCard) => {
 };
 
 export default class Popup extends AbstractView {
-  constructor(filmCard) {
+  constructor(filmCard, container) {
     super();
     this._filmCard = filmCard;
-    this._parentElem = null;
+    this._parentElem = container;
     this._onEscKeyDown = null;
-    this._filmCardCloseBtnHandler = this._filmCardCloseBtnHandler.bind(this);
-    this.close = this.close.bind(this);
+    this._cardCloseBtnClickHandler = this._cardCloseBtnClickHandler.bind(this);
+    this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
+    this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
     return createPopup(this._filmCard);
   }
 
-  _filmCardCloseBtnHandler() {
-    this._callback.filmCardCloseBtn();
-  }
-
-  _setFilmCardCloseBtnHandler(callback) {
-    this._callback.filmCardCloseBtn = callback;
-    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._filmCardCloseBtnHandler);
+  show() {
+    this._parentElem.classList.add('hide-overflow');
+    this._parentElem.appendChild(this.getElement());
+    document.addEventListener('keydown', this._callback.escDown);
+    this._state = States.OPENED;
   }
 
   close() {
     this._parentElem.removeChild(this.getElement());
     this._parentElem.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', this._onEscKeyDown);
+    document.removeEventListener('keydown', this._callback.escDown);
   }
 
-  show(elem, onEscKeyDown) {
-    this._parentElem = elem;
-    this._onEscKeyDown = onEscKeyDown;
-    this._setFilmCardCloseBtnHandler(this.close);
-    this._parentElem.classList.add('hide-overflow');
-    this._parentElem.appendChild(this.getElement());
-    document.addEventListener('keydown', this._onEscKeyDown);
+  setEscKeyDownHandler(callback) {
+    this._callback.escDown = callback;
+  }
+
+  setAddToWatchListHandler(callback) {
+    this._callback.addToWatchList = callback;
+    this.getElement().querySelector('#watchlist').addEventListener('click', this._addToWatchListClickHandler);
+  }
+
+  setMarkAsWatchedHandler(callback) {
+    this._callback.markAsWatched = callback;
+    this.getElement().querySelector('#watched').addEventListener('click', this._markAsWatchedClickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favorite = callback;
+    this.getElement().querySelector('#favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  setCardCloseBtnClickHandler(callback) {
+    this._callback.filmCardCloseBtn = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._cardCloseBtnClickHandler);
+  }
+
+  _cardCloseBtnClickHandler() {
+    this._callback.filmCardCloseBtn();
+  }
+
+  _addToWatchListClickHandler() {
+    this._callback.addToWatchList();
+  }
+
+  _markAsWatchedClickHandler() {
+    this._callback.markAsWatched();
+  }
+
+  _favoriteClickHandler() {
+    this._callback.favorite();
   }
 }
