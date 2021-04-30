@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import {getRandomInteger, getRandom, getRandomElement, getRandomElements} from '../utils/common.js';
+import {nanoid} from 'nanoid';
 
 const commentIds = [0, 1, 2, 3, 4];
 const titles = [
@@ -66,6 +67,7 @@ const countries = [
 
 export const generateFilm = () => {
   return {
+    id: nanoid(),
     title: getRandomElement(titles),
     totalRating: getRandom(0, 10, 1),
     poster: getRandomElement(posters),
