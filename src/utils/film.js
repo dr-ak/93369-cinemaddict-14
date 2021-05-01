@@ -36,3 +36,5 @@ export const humanizeCommentDate = (date) => {
     return 'just now';
   }
 };
+
+export const sortByDate = (first, second) => dayjs(second.date).diff(dayjs(first.date));
