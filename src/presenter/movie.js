@@ -69,6 +69,11 @@ export default class Movie {
     }
   }
 
+  destroy() {
+    remove(this._popupComponent);
+    remove(this._filmCardComponent);
+  }
+
   _handleCardClick() {
     this._showExtraData();
     this._popupComponent.show();
