@@ -1,16 +1,19 @@
 import {humanizeFilmDate, humanizeCommentDate} from '../utils/film.js';
 import {generateComment} from '../mock/comment.js';
-import AbstractView from './abstract.js';
-
-const States = {
-  OPENED: 'OPENED',
-  CLOSED: 'CLOSED',
-};
+import Smart from './smart.js';
 
 const commentsList = new Array(5).fill().map(generateComment);
 
-export const createPopup = (filmCard) => {
-  const {title, totalRating, poster, date, runtime, genres, description, comments, watchList, alreadyWatched, favorite, alternativeTitle, ageRating, director, writers, actors, releaseCountry} = filmCard;
+export const createPopup = (data) => {
+  const {title, totalRating, poster, date, runtime, genres, description, comments, watchList, alreadyWatched, favorite, alternativeTitle, ageRating, director, writers, actors, releaseCountry, isChoosedEmoji, choosedEmoji} = data;
+  const emojis = {
+    'smile': '../../images/emoji/smile.png',
+    'sleeping': '../../images/emoji/sleeping.png',
+    'puke': '../../images/emoji/puke.png',
+    'angry': '../../images/emoji/angry.png',
+  };
+  const choosedEmojiPath = emojis[choosedEmoji];
+
   const createGenresTemplate = (genres) => {
     let template = '';
     for(const genre of genres) {
@@ -18,13 +21,8 @@ export const createPopup = (filmCard) => {
     }
     return template;
   };
+
   const createCommentsTemplate = (comments) => {
-    const emojis = {
-      'smile': '../../images/emoji/smile.png',
-      'sleeping': '../../images/emoji/sleeping.png',
-      'puke': '../../images/emoji/puke.png',
-      'angry': '../../images/emoji/angry.png',
-    };
     let template = '';
     for(const commentId of comments) {
       const {author, comment, date, emotion} = commentsList[commentId];
@@ -47,6 +45,12 @@ export const createPopup = (filmCard) => {
     return template;
   };
 
+  const createChoosedEmoji = () => {
+    return isChoosedEmoji
+      ? `<img src="${choosedEmojiPath}" width="55" height="55" alt="emoji-${choosedEmoji}">`
+      : '';
+  };
+
   const ageLimit = ageRating
     ? ageRating + '+'
     : '';
@@ -65,6 +69,8 @@ export const createPopup = (filmCard) => {
     : '';
   const commentsCount = comments.length;
   const commentsTemplate = createCommentsTemplate(comments);
+  const disabledTextarea = isChoosedEmoji ? '' : 'disabled';
+  const emojiElement = createChoosedEmoji();
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -149,10 +155,10 @@ export const createPopup = (filmCard) => {
           </ul>
 
           <div class="film-details__new-comment">
-            <div class="film-details__add-emoji-label"></div>
+            <div class="film-details__add-emoji-label">${emojiElement}</div>
 
             <label class="film-details__comment-label">
-              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${disabledTextarea}></textarea>
             </label>
 
             <div class="film-details__emoji-list">
@@ -183,27 +189,33 @@ export const createPopup = (filmCard) => {
   </section>`;
 };
 
-export default class Popup extends AbstractView {
+export default class Popup extends Smart {
   constructor(filmCard, container) {
     super();
-    this._filmCard = filmCard;
+    this._data = Popup.parseFilmCardToData(filmCard);
     this._parentElem = container;
     this._onEscKeyDown = null;
     this._cardCloseBtnClickHandler = this._cardCloseBtnClickHandler.bind(this);
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._markAsWatchedClickHandler = this._markAsWatchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._emojiListHandler = this._emojiListHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createPopup(this._filmCard);
+    return createPopup(this._data);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
   }
 
   show() {
     this._parentElem.classList.add('hide-overflow');
     this._parentElem.appendChild(this.getElement());
     document.addEventListener('keydown', this._callback.escDown);
-    this._state = States.OPENED;
   }
 
   close() {
@@ -251,4 +263,44 @@ export default class Popup extends AbstractView {
   _favoriteClickHandler() {
     this._callback.favorite();
   }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.film-details__emoji-list')
+      .addEventListener('click', this._emojiListHandler);
+  }
+
+  _emojiListHandler(evt) {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+    evt.preventDefault();
+    const scroll = this.getElement().scrollTop;
+    this.updateData({
+      isChoosedEmoji: true,
+      choosedEmoji: evt.target.value,
+    });
+    this.getElement().scrollTop = scroll;
+    const inputText = this.getElement().querySelector('.film-details__comment-input');
+    inputText.focus();
+    inputText.placeholder = '';
+  }
+
+  static parseFilmCardToData(filmCard) {
+    return Object.assign(
+      {},
+      filmCard,
+      {
+        isChoosedEmoji: false,
+        choosedEmoji: '',
+      },
+    );
+  }
+
+  static parseDataToFilmCard(data) {
+    delete data.isChoosedEmoji;
+
+    return data;
+  }
 }
+
