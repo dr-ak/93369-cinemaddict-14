@@ -72,7 +72,7 @@ export const generateFilm = () => {
     totalRating: getRandom(0, 10, 1),
     poster: getRandomElement(posters),
     date: dayjs().add(-3 - getRandomInteger(0, 80), 'year').add(-getRandomInteger(0, 30), 'day').format('YYYY-MM-DD'),
-    runtime: '1h 36m',
+    runtime: getRandomInteger(30, 240),
     genres: getRandomElements(genres, 3, 1),
     description: getRandomElements(texts, 5, 1).join(' '),
     comments: getRandomElements(commentIds, 5),

@@ -1,7 +1,15 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 export const extractYearFromDate = (date) => {
   return dayjs(date).format('YYYY');
+};
+
+export const formatRuntime = (runtime) => {
+  const hour = Math.floor(runtime / 60) ? Math.floor(runtime / 60) + 'h' : '';
+  const minute = runtime % 60 ? ' ' + runtime % 60 + 'm' : '';
+  return hour + minute;
 };
 
 export const humanizeFilmDate = (date) => {
@@ -9,32 +17,9 @@ export const humanizeFilmDate = (date) => {
 };
 
 export const humanizeCommentDate = (date) => {
-  const yearDiff = dayjs().diff(date, 'year');
-  if (yearDiff > 1) {
-    return yearDiff + ' year ago';
-  } else if (yearDiff === 1) {
-    return 'a year ago';
-  }
-  const monthDiff = dayjs().diff(date, 'month');
-  if (monthDiff > 1) {
-    return monthDiff + ' month ago';
-  } else if (monthDiff === 1) {
-    return 'a month ago';
-  }
-  const hourDiff = dayjs().diff(date, 'hour');
-  if (hourDiff > 1) {
-    return hourDiff + ' hour ago';
-  } else if (hourDiff === 1) {
-    return 'a hour ago';
-  }
-  const minuteDiff = dayjs().diff(date, 'hour');
-  if (minuteDiff > 3) {
-    return minuteDiff + ' hour ago';
-  } else if (minuteDiff > 1) {
-    return 'a few minutes ago';
-  } else {
-    return 'just now';
-  }
+  dayjs.extend(duration);
+  dayjs.extend(relativeTime);
+  return dayjs.duration(-dayjs().diff(date, 'm'), 'm').humanize(true);
 };
 
 export const sortByDate = (first, second) => dayjs(second.date).diff(dayjs(first.date));
