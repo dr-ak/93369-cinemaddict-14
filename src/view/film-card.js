@@ -1,9 +1,10 @@
-import {extractYearFromDate} from '../utils/film.js';
+import {extractYearFromDate, formatRuntime} from '../utils/film.js';
 import AbstractView from './abstract.js';
 
 export const createFilmCard = (filmCard) => {
   const {title, totalRating, poster, date, runtime, genres, description, comments, watchList, alreadyWatched, favorite} = filmCard;
   const yearFromDate = extractYearFromDate(date);
+  const runTime = formatRuntime(runtime);
   const filmGenre = genres[0];
   const cutDescription = description.length > 140
     ? description.substr(0, 139) + '...'
@@ -23,7 +24,7 @@ export const createFilmCard = (filmCard) => {
     <p class="film-card__rating">${totalRating}</p>
     <p class="film-card__info">
       <span class="film-card__year">${yearFromDate}</span>
-      <span class="film-card__duration">${runtime}</span>
+      <span class="film-card__duration">${runTime}</span>
       <span class="film-card__genre">${filmGenre}</span>
     </p>
     <img src="${poster}" alt="" class="film-card__poster">

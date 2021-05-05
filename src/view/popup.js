@@ -299,6 +299,7 @@ export default class Popup extends Smart {
 
   static parseDataToFilmCard(data) {
     delete data.isChoosedEmoji;
+    delete data.choosedEmoji;
 
     return data;
   }
