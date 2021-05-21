@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 import {getRandomInteger, getRandomElement} from '../utils/common.js';
 
 const people = [
@@ -30,6 +31,7 @@ const emotions = ['smile', 'sleeping', 'puke', 'angry'];
 
 export const generateComment = () => {
   return {
+    id: nanoid(),
     author: getRandomElement(people),
     comment: getRandomElement(texts),
     date: dayjs()

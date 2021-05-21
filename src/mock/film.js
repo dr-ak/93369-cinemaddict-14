@@ -1,8 +1,12 @@
 import dayjs from 'dayjs';
+import {generateComment} from './comment.js';
 import {getRandomInteger, getRandom, getRandomElement, getRandomElements} from '../utils/common.js';
 import {nanoid} from 'nanoid';
 
-const commentIds = [0, 1, 2, 3, 4];
+const FILM_COUNT = 22;
+
+let comments = [];
+
 const titles = [
   'Made for each other',
   'Popeye meets sinbad',
@@ -65,7 +69,17 @@ const countries = [
   'Spain',
 ];
 
-export const generateFilm = () => {
+const generateComments = () => {
+  return new Array(getRandomInteger(0, 5)).fill().map(generateComment);
+};
+
+const getIdsComments = () => {
+  const buff = generateComments();
+  comments = [...comments, ...buff];
+  return buff.map((comment) => comment.id);
+};
+
+const generateFilm = () => {
   return {
     id: nanoid(),
     title: getRandomElement(titles),
@@ -75,7 +89,7 @@ export const generateFilm = () => {
     runtime: getRandomInteger(30, 240),
     genres: getRandomElements(genres, 3, 1),
     description: getRandomElements(texts, 5, 1).join(' '),
-    comments: getRandomElements(commentIds, 5),
+    comments: getIdsComments(),
     watchList: getRandomInteger(0, 1),
     alreadyWatched: getRandomInteger(0, 1),
     favorite: getRandomInteger(0, 1),
@@ -87,3 +101,51 @@ export const generateFilm = () => {
     releaseCountry: getRandomElement(countries),
   };
 };
+
+const api = {
+  filmCards: new Array(FILM_COUNT).fill().map(generateFilm),
+  comments: comments,
+
+  setFilmCards: (filmCards) => {
+    api.filmCards = filmCards;
+  },
+
+  getFilmCards: () => api.filmCards.slice(),
+
+  getComments: (id) => api.comments.filter((comment) => {
+    return api.filmCards.find((filmCard) => filmCard.id === id).comments.includes(comment.id);
+  }),
+
+  addComment: (comment, filmId) => {
+    const commentId = nanoid();
+    api.comments.push(Object.assign(
+      {},
+      comment,
+      {
+        id: commentId,
+        author: getRandomElement(people),
+        date: dayjs().format('YYYY-MM-DDTHH:mm'),
+      },
+    ));
+    api.filmCards.find((film) => film.id === filmId).comments.push(commentId);
+
+    return {movie: api.filmCards.find((film) => film.id === filmId), comments: api.getComments(filmId)};
+  },
+
+  deleteComment: (id) => {
+    let commentIndex = api.comments.findIndex((comment) => comment.id === id);
+    api.comments = [
+      ...api.comments.slice(0, commentIndex),
+      ...api.comments.slice(commentIndex + 1),
+    ];
+
+    const filmIndex = api.filmCards.findIndex((filmCard) => filmCard.comments.includes(id));
+    commentIndex = api.filmCards[filmIndex].comments.findIndex((commentId) => commentId === id);
+    api.filmCards[filmIndex].comments = [
+      ...api.filmCards[filmIndex].comments.slice(0, commentIndex),
+      ...api.filmCards[filmIndex].comments.slice(commentIndex + 1),
+    ];
+  },
+};
+
+export default api;
