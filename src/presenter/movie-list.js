@@ -80,11 +80,6 @@ export default class MovieList {
     return filteredFilmCards;
   }
 
-  _isExtraListContains(id) {
-    return this._findFilmCard(this._getMostCommentedList(), id) ||
-      this._findFilmCard(this._getTopRatedList(), id);
-  }
-
   _getMostCommentedList() {
     return this._moviesModel.getMovies()
       .sort((first, second) => second.comments.length - first.comments.length)
@@ -97,10 +92,6 @@ export default class MovieList {
       .sort((first, second) => second.totalRating - first.totalRating)
       .slice(0, FILM_EXTRA_COUNT)
       .filter((film) => film.totalRating);
-  }
-
-  _findFilmCard(list, filmId) {
-    return list.find((film) => film.id === filmId);
   }
 
   _clearFilmsBoard({resetRenderedFilmsCount = false, resetSortType = false} = {}) {
@@ -254,16 +245,12 @@ export default class MovieList {
       case UserAction.DELETE_COMMENT:
         this._api.deleteComment(data.commentId);
         this._moviesModel.setMovies(this._api.getFilmCards());
-        this._isExtraListContains(data.filmId)
-          ? this._refreshFilmsBoard()
-          : this._presenters.moviesPresenter[data.filmId].init(this._findFilmCard(this._getMovies(), data.filmId));
+        this._refreshFilmsBoard();
         return true;
       case UserAction.ADD_COMMENT:
         this._api.addComment(data.comment, data.filmId);
         this._moviesModel.setMovies(this._api.getFilmCards());
-        this._isExtraListContains(data.filmId)
-          ? this._refreshFilmsBoard()
-          : this._presenters.moviesPresenter[data.filmId].init(this._findFilmCard(this._getMovies(), data.filmId));
+        this._refreshFilmsBoard();
         return true;
     }
   }
