@@ -20,15 +20,12 @@ export default class Movies extends Observer {
     if (index === -1) {
       throw new Error('Can\'t update unexisting film card');
     }
-    // console.log(update)
-    // console.log(this._filmCards)
 
     this._filmCards = [
       ...this._filmCards.slice(0, index),
       update,
       ...this._filmCards.slice(index + 1),
     ];
-    // console.log(this._filmCards)
 
     this._notify(updateType, update);
   }

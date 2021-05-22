@@ -80,6 +80,10 @@ const getIdsComments = () => {
 };
 
 const generateFilm = () => {
+  const watched = getRandomInteger(0, 1);
+  const watchingDate = watched
+    ? dayjs().add(-getRandomInteger(0, 1), 'year').add(-getRandomInteger(0, 30), 'day').format('YYYY-MM-DD')
+    : 0;
   return {
     id: nanoid(),
     title: getRandomElement(titles),
@@ -91,8 +95,9 @@ const generateFilm = () => {
     description: getRandomElements(texts, 5, 1).join(' '),
     comments: getIdsComments(),
     watchList: getRandomInteger(0, 1),
-    alreadyWatched: getRandomInteger(0, 1),
+    alreadyWatched: watched,
     favorite: getRandomInteger(0, 1),
+    watchingDate: watchingDate,
     alternativeTitle: getRandomElement(titles),
     ageRating: getRandomElement([0, 18]),
     director: getRandomElement(people),

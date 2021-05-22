@@ -1,7 +1,7 @@
 import Nav from '../view/nav.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {filter} from '../utils/filter.js';
-import {FilterType, UpdateType} from '../const.js';
+import {FilterType} from '../const.js';
 
 export default class NavPresenter {
   constructor(navContainer, filterModel, moviesModel) {
@@ -10,9 +10,9 @@ export default class NavPresenter {
     this._moviesModel = moviesModel;
 
     this._navComponent = null;
+    this._handleFilterTypeChange = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
 
     this._moviesModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
@@ -34,16 +34,8 @@ export default class NavPresenter {
     remove(prevNavComponent);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleFilterTypeChange(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
-      return;
-    }
-
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+  setFilterTypeChangeHandler(handler) {
+    this._handleFilterTypeChange = handler;
   }
 
   _getFilters() {
@@ -54,5 +46,9 @@ export default class NavPresenter {
       history: filter[FilterType.HISTORY](filmCards).length,
       favorites: filter[FilterType.FAVORITES](filmCards).length,
     };
+  }
+
+  _handleModelEvent() {
+    this.init();
   }
 }
