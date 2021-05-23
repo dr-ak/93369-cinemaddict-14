@@ -6,10 +6,13 @@ export const extractYearFromDate = (date) => {
   return dayjs(date).format('YYYY');
 };
 
-export const formatRuntime = (runtime) => {
-  const hour = Math.floor(runtime / 60) ? Math.floor(runtime / 60) + 'h' : '';
-  const minute = runtime % 60 ? ' ' + runtime % 60 + 'm' : '';
-  return hour + minute;
+export const formatRuntime = (runtime, isObj = false) => {
+  const hours = Math.floor(runtime / 60);
+  const minutes = runtime % 60;
+  if (isObj) {
+    return {h: hours, m: minutes};
+  }
+  return (hours ? hours + 'h' : '') + (minutes ? ' ' + minutes + 'm' : '');
 };
 
 export const humanizeFilmDate = (date) => {
@@ -23,3 +26,11 @@ export const humanizeCommentDate = (date) => {
 };
 
 export const sortByDate = (first, second) => dayjs(second.date).diff(dayjs(first.date));
+
+export const isWatchDateInto = (date, timeRange) => {
+  if (timeRange === 'all-time') {
+    return true;
+  }
+  return dayjs().diff(date, timeRange) <= 0;
+};
+

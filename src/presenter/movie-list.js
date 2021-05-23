@@ -65,6 +65,16 @@ export default class MovieList {
     this._renderFilmsBoard();
   }
 
+  show() {
+    this._sortComponent.show();
+    this._filmsCompanent.show();
+  }
+
+  hide() {
+    this._sortComponent.hide();
+    this._filmsCompanent.hide();
+  }
+
   _getMovies() {
     const filterType = this._filterModel.getFilter();
     const filmCards = this._moviesModel.getMovies();
