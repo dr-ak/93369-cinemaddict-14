@@ -4,6 +4,7 @@ import FilmsList from '../view/films-list.js';
 import FilmsListContainer from '../view/films-list-container.js';
 import ShowMoreButton from '../view/show-more-button.js';
 import Sort from '../view/sort.js';
+import Loading from '../view/loading.js';
 
 import {filter} from '../utils/filter.js';
 import {render, remove} from '../utils/render.js';
@@ -24,6 +25,7 @@ export default class MovieList {
     this._popupContainer = popupContainer;
     this._moviesModel = moviesModel;
     this._filterModel = filterModel;
+    this._isLoading = true;
     this._api = api;
 
     this._renderedFilmsCount = FILM_COUNT_PER_STEP;
@@ -48,6 +50,7 @@ export default class MovieList {
     this._topRatedFilmsListContainerComponent = new FilmsListContainer();
     this._mostCommentedFilmsListComponent = new FilmsList(MOST_COMMENTED_LIST_TITLE, MOST_COMMENTED_LIST_ID);
     this._mostCommentedFilmsListContainerComponent = new FilmsListContainer();
+    this._loadingComponent = new Loading();
 
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -226,7 +229,15 @@ export default class MovieList {
     render(this._filmsContainer, this._sortComponent);
   }
 
+  _renderLoading() {
+    render(this._filmsContainer, this._loadingComponent);
+  }
+
   _renderFilmsBoard() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
     if (!this._getMovies().length) {
       this._renderNoFilms();
       return;
@@ -244,11 +255,13 @@ export default class MovieList {
   }
 
   _handleFilmChange(updateType, updatedFilm) {
-    this._moviesModel.updateFilmCard(updateType, updatedFilm);
+    this._api.updateFilmCard(updatedFilm)
+      .then((filmCard) => {
+        this._moviesModel.updateFilmCard(updateType, filmCard);
+      });
   }
 
   _handleCommentAction(userAction, data) {
-    this._api.setFilmCards(this._moviesModel.getMovies());
     switch (userAction) {
       case UserAction.GET_COMMENTS:
         return this._api.getComments(data.id);
@@ -275,6 +288,11 @@ export default class MovieList {
         break;
       case UpdateType.MAJOR:
         this._refreshFilmsBoard({resetRenderedFilmsCount: true, resetSortType: true});
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderFilmsBoard();
         break;
     }
   }

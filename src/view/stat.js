@@ -124,20 +124,27 @@ export const createStat = ({userRank, watchedFilmsCount, totalHours, totalMinute
 };
 
 export default class Stat extends Smart {
-  constructor(userRank, filmCards) {
+  constructor(userRank) {
     super();
     this._userRank = userRank;
+    this._watchedFilmCards = [];
+    this._filmCards = [];
+    this._data = {};
+
+    this._rangeFilterChangeHandler = this._rangeFilterChangeHandler.bind(this);
+  }
+
+
+  init(filmCards) {
     this._watchedFilmCards = filmCards.filter((filmCard) => filmCard.alreadyWatched);
     this._filmCards = this._watchedFilmCards.slice();
     this._data = Object.assign(this._getData(), this._getCheckedRange());
-
-    this._rangeFilterChangeHandler = this._rangeFilterChangeHandler.bind(this);
-
     this._setCharts(this._data);
     this._setRangeFilterChangeHandler();
   }
 
   getTemplate() {
+    // console.log(this._data.a())
     return createStat(this._data);
   }
 
