@@ -48,7 +48,7 @@ export default class Movie {
     }
 
     if (popupState && popupState.filmId === this._filmCard.id) {
-      this._showPopup();
+      this._createPopup(popupState.commentsData);
       this._popupComponent.setState(popupState);
     }
   }
@@ -70,9 +70,14 @@ export default class Movie {
   }
 
   _showPopup() {
-    this._showExtraData();
+    this._commentAction(UserAction.GET_COMMENTS, this._filmCard)
+      .then((commentsData) => this._createPopup(commentsData))
+      .catch(() => this._createPopup([]));
+  }
 
-    this._popupComponent = new Popup(this._filmCard, this._popupContainer, this._commentAction(UserAction.GET_COMMENTS, this._filmCard));
+  _createPopup(commentsData) {
+    this._showExtraData();
+    this._popupComponent = new Popup(this._filmCard, this._popupContainer, commentsData);
     this._popupComponent.setAddToWatchListHandler(this._handleAddToWatchListClick);
     this._popupComponent.setMarkAsWatchedHandler(this._handleMarkAsWatchedClick);
     this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
