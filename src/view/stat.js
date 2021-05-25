@@ -146,7 +146,6 @@ export default class Stat extends Smart {
   }
 
   getTemplate() {
-    // console.log(this._data.a())
     return createStat(this._data);
   }
 

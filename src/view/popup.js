@@ -3,7 +3,7 @@ import Smart from './smart.js';
 import he from 'he';
 
 const createPopup = (data, comments) => {
-  const {title, totalRating, poster, date, runtime, genres, description, watchList, alreadyWatched, favorite, alternativeTitle, ageRating, director, writers, actors, releaseCountry} = data;
+  const {title, totalRating, poster, date, runtime, genres, description, watchList, alreadyWatched, favorite, alternativeTitle, ageRating, director, writers, actors, releaseCountry, isDisabled} = data;
 
   const createGenresTemplate = (genres) => {
     let template = '';
@@ -94,13 +94,13 @@ const createPopup = (data, comments) => {
         </div>
 
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${addTowatchListChecked}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${addTowatchListChecked} ${isDisabled ? ' disabled' : ''}>
           <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${markAsWatchedChecked}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${markAsWatchedChecked} ${isDisabled ? ' disabled' : ''}>
           <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${markAsFavoriteChecked}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${markAsFavoriteChecked} ${isDisabled ? ' disabled' : ''}>
           <label for="favorite" class="film-details__control-label">Add to favorites</label>
         </section>
       </div>
@@ -110,7 +110,7 @@ const createPopup = (data, comments) => {
 };
 
 const createComments = (data, commentsData) => {
-  const {isChoosedEmoji, choosedEmoji, commentText} = data;
+  const {isChoosedEmoji, choosedEmoji, commentText, isDisabled} = data;
 
   const emojis = {
     'smile': '../../images/emoji/smile.png',
@@ -123,9 +123,10 @@ const createComments = (data, commentsData) => {
   const createCommentsTemplate = (comments) => {
     let template = '';
     for(const data of comments) {
-      const {id, author, comment, date, emotion} = data;
+      const {id, author, comment, date, emotion, isDeleting} = data;
       const emoji = emojis[emotion];
       const commentDate = humanizeCommentDate(date);
+      const deleteButton = isDeleting ? 'Deleting...' : 'Delete';
       template += `<li class="film-details__comment">
           <span class="film-details__comment-emoji">
             <img src="${emoji}" width="55" height="55" alt="emoji-${emotion}">
@@ -135,7 +136,7 @@ const createComments = (data, commentsData) => {
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${author}</span>
               <span class="film-details__comment-day">${commentDate}</span>
-              <button class="film-details__comment-delete" id="${id}">Delete</button>
+              <button class="film-details__comment-delete" id="${id}" ${isDeleting ? ' disabled' : ''}>${deleteButton}</button>
             </p>
           </div>
         </li>`;
@@ -166,26 +167,26 @@ const createComments = (data, commentsData) => {
         <div class="film-details__add-emoji-label">${emojiElement}</div>
 
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${disabledTextarea}>${he.encode(commentText)}</textarea>
+          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${disabledTextarea} ${isDisabled ? ' disabled' : ''}>${he.encode(commentText)}</textarea>
         </label>
 
         <div class="film-details__emoji-list">
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${isDisabled ? ' disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-smile">
             <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${isDisabled ? ' disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-sleeping">
             <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${isDisabled ? ' disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-puke">
             <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${isDisabled ? ' disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-angry">
             <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
           </label>
@@ -208,7 +209,13 @@ export default class Popup extends Smart {
     super();
     this._data = Popup.parseFilmCardToData(filmCard);
     this._parentElem = container;
-    this._commentsData = commentsData;
+    this._commentsData = commentsData.map((commentData) => Object.assign(
+      {},
+      commentData,
+      {
+        isDeleting: false,
+      },
+    )),
     this._isUploadComments = this._commentsData.length === this._data.comments.length;
     this._onEscKeyDown = null;
     this._cardCloseBtnClickHandler = this._cardCloseBtnClickHandler.bind(this);
@@ -221,24 +228,6 @@ export default class Popup extends Smart {
     this._saveCommentHendler = this._saveCommentHendler.bind(this);
 
     this._setInnerHandlers();
-  }
-
-  getTemplate() {
-    const comments = this._isUploadComments
-      ? createComments(this._data, this._commentsData)
-      : createNoUploadComments();
-
-    return createPopup(this._data, comments);
-  }
-
-  show() {
-    this._parentElem.classList.add('hide-overflow');
-    document.addEventListener('keydown', this._callback.escDown);
-  }
-
-  close() {
-    this._parentElem.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', this._callback.escDown);
   }
 
   setState(state) {
@@ -262,6 +251,32 @@ export default class Popup extends Smart {
       commentText: this._data.commentText,
       commentsData: this._commentsData,
     };
+  }
+
+  getTemplate() {
+    const comments = this._isUploadComments
+      ? createComments(this._data, this._commentsData)
+      : createNoUploadComments();
+
+    return createPopup(this._data, comments);
+  }
+
+  show() {
+    this._parentElem.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._callback.escDown);
+  }
+
+  close() {
+    this._parentElem.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', this._callback.escDown);
+  }
+
+  shakeComments(callback) {
+    this.shake(callback, this.getElement().querySelector('.film-details__bottom-container'));
+  }
+
+  resetDeletingComments() {
+    this._commentsData.forEach((commentData) => commentData.isDeleting = false);
   }
 
   restoreHandlers() {
@@ -326,15 +341,18 @@ export default class Popup extends Smart {
     this._callback.filmCardCloseBtn();
   }
 
-  _addToWatchListClickHandler() {
+  _addToWatchListClickHandler(evt) {
+    evt.preventDefault();
     this._callback.addToWatchList();
   }
 
-  _markAsWatchedClickHandler() {
+  _markAsWatchedClickHandler(evt) {
+    evt.preventDefault();
     this._callback.markAsWatched();
   }
 
-  _favoriteClickHandler() {
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
     this._callback.favorite();
   }
 
@@ -350,7 +368,8 @@ export default class Popup extends Smart {
         isChoosedEmoji: false,
         choosedEmoji: '',
         commentText: '',
-      }, true);
+        isDisabled: true,
+      });
 
       this._callback.saveComment({comment: {
         comment: commentText,
@@ -364,6 +383,10 @@ export default class Popup extends Smart {
       return;
     }
     evt.preventDefault();
+    this._commentsData.find((commentData) => commentData.id === evt.target.id).isDeleting = true;
+    this.updateData({
+      isDisabled: true,
+    });
     this._callback.deleteComment({commentId: evt.target.id, filmId: this._data.id});
   }
 
@@ -372,12 +395,10 @@ export default class Popup extends Smart {
       return;
     }
     evt.preventDefault();
-    const scroll = this.getElement().scrollTop;
     this.updateData({
       isChoosedEmoji: true,
       choosedEmoji: evt.target.value,
     });
-    this.getElement().scrollTop = scroll;
     const inputText = this.getElement().querySelector('.film-details__comment-input');
     inputText.focus();
     inputText.selectionStart = inputText.value.length;
@@ -399,6 +420,7 @@ export default class Popup extends Smart {
         isChoosedEmoji: false,
         choosedEmoji: '',
         commentText: '',
+        isDisabled: false,
       },
     );
   }
@@ -406,6 +428,8 @@ export default class Popup extends Smart {
   static parseDataToFilmCard(data) {
     delete data.isChoosedEmoji;
     delete data.choosedEmoji;
+    delete data.commentText;
+    delete data.isDisabled;
 
     return data;
   }

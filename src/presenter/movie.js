@@ -134,11 +134,27 @@ export default class Movie {
   }
 
   _handleDeleteCommentClick(data) {
-    this._commentAction(UserAction.DELETE_COMMENT, data);
+    this._commentAction(UserAction.DELETE_COMMENT, data)
+      .then((success) => {
+        if (!success) {
+          this._popupComponent.shakeComments(() => {
+            this._popupComponent.resetDeletingComments();
+            this._popupComponent.updateData({
+              isDisabled: false,
+            });
+          });
+        }
+      });
   }
 
   _handleSaveComment(data) {
-    this._commentAction(UserAction.ADD_COMMENT, data);
+    this._commentAction(UserAction.ADD_COMMENT, data)
+      .then((success) => {
+        if (!success) {
+          this._popupComponent.shake(() =>
+            this._popupComponent.updateData({isDisabled: false}));
+        }
+      });
   }
 
   _escKeyDownHandler(evt) {
