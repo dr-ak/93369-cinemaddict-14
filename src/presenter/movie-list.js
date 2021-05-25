@@ -107,7 +107,7 @@ export default class MovieList {
       .filter((film) => film.totalRating);
   }
 
-  _clearFilmsBoard({resetRenderedFilmsCount = false, resetSortType = false} = {}) {
+  _clearFilmsBoard({resetRenderedFilmsCount = false, resetSortType = false, commentsData = null} = {}) {
     const filmCardsCount = this._getMovies().length;
     this._popupActiveState = null;
     Object.values(this._presenters).forEach((presenters) => {
@@ -121,6 +121,10 @@ export default class MovieList {
         });
       presenters = {};
     });
+
+    if (this._popupActiveState && commentsData) {
+      this._popupActiveState.commentsData = commentsData;
+    }
 
     remove(this._sortComponent);
     remove(this._filmsCompanent);
@@ -139,9 +143,9 @@ export default class MovieList {
     }
   }
 
-  _refreshFilmsBoard({resetRenderedFilmsCount = false, resetSortType = false} = {}) {
+  _refreshFilmsBoard({resetRenderedFilmsCount = false, resetSortType = false, commentsData = null} = {}) {
     const scroll = window.pageYOffset;
-    this._clearFilmsBoard({resetRenderedFilmsCount: resetRenderedFilmsCount, resetSortType: resetSortType});
+    this._clearFilmsBoard({resetRenderedFilmsCount: resetRenderedFilmsCount, resetSortType: resetSortType, commentsData: commentsData});
     this._renderFilmsBoard();
     window.scrollTo(0, scroll);
   }
@@ -266,15 +270,29 @@ export default class MovieList {
       case UserAction.GET_COMMENTS:
         return this._api.getComments(data.id);
       case UserAction.DELETE_COMMENT:
-        this._api.deleteComment(data.commentId);
-        this._moviesModel.setMovies(this._api.getFilmCards());
-        this._refreshFilmsBoard();
-        return true;
+        return this._api.deleteComment(data.commentId)
+          .then(() => {
+            return Promise.all([this._api.getComments(data.filmId), this._api.getFilmCards()])
+              .then(([comments, filmCards]) => {
+                this._moviesModel.setMovies(UpdateType.DEFAULT, filmCards);
+                this._refreshFilmsBoard({commentsData: comments});
+                return true;
+              })
+              .catch(() => false);
+          })
+          .catch(() => false);
       case UserAction.ADD_COMMENT:
-        this._api.addComment(data.comment, data.filmId);
-        this._moviesModel.setMovies(this._api.getFilmCards());
-        this._refreshFilmsBoard();
-        return true;
+        return this._api.addComment(data.comment, data.filmId)
+          .then((data) => {
+            return Promise.all([data.comments, this._api.getFilmCards()])
+              .then(([comments, filmCards]) => {
+                this._moviesModel.setMovies(UpdateType.DEFAULT, filmCards);
+                this._refreshFilmsBoard({commentsData: comments});
+                return true;
+              })
+              .catch(() => false);
+          })
+          .catch(() => false);
     }
   }
 
@@ -294,6 +312,7 @@ export default class MovieList {
         remove(this._loadingComponent);
         this._renderFilmsBoard();
         break;
+      default:
     }
   }
 
