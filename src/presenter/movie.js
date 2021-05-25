@@ -48,7 +48,7 @@ export default class Movie {
     }
 
     if (popupState && popupState.filmId === this._filmCard.id) {
-      this._showPopup();
+      this._createPopup(popupState.commentsData);
       this._popupComponent.setState(popupState);
     }
   }

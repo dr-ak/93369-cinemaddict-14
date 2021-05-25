@@ -108,7 +108,7 @@ export default class Movies extends Observer {
           'release_country': filmCard.releaseCountry,
         },
         'runtime': filmCard.runtime,
-        'genre': filmCard.genre,
+        'genre': filmCard.genres,
         'description': filmCard.description,
       },
       'user_details': {

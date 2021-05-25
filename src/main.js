@@ -7,13 +7,12 @@ import FooterStatistics from './view/footer-statistics.js';
 import NavPresenter from './presenter/nav-presenter.js';
 import {UpdateType, FilterType} from './const.js';
 
-// import api from './mock/film.js';
 import Api from './api.js';
 
 import {render} from './utils/render.js';
 
 const AUTHORIZATION = 'Basic aaaa00001111bbbb';
-const END_POINT = 'https://13.ecmascript.pages.academy/cinemaddict';
+const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
@@ -31,6 +30,7 @@ const footerStatistics = body.querySelector('.footer__statistics');
 const navPresenter = new NavPresenter(main, filterModel, moviesModel);
 const movieListPresenter = new MovieList(main, body, moviesModel, filterModel, api);
 const stat = new Stat(userRank);
+stat.hide();
 
 const handleFilterTypeChange = (filterType) => {
   if (filterModel.getFilter() === filterType) {
@@ -39,6 +39,7 @@ const handleFilterTypeChange = (filterType) => {
   if (filterType === FilterType.STATS) {
     filterModel.setFilter(UpdateType.MAJOR, filterType);
     movieListPresenter.hide();
+    stat.init(moviesModel.getMovies());
     stat.show();
   } else {
     filterModel.setFilter(UpdateType.MAJOR, filterType);
@@ -55,17 +56,11 @@ api.getFilmCards()
   .then((response) => {
     render(header, new UserRank(userRank));
     moviesModel.setMovies(UpdateType.INIT, response);
-    stat.init(response);
-    stat.hide();
     render(main, stat);
     render(footerStatistics, new FooterStatistics(response.length));
   })
   .catch(() => {
     moviesModel.setMovies(UpdateType.INIT, []);
-    navPresenter.init();
-    movieListPresenter.init();
-    stat.init([]);
-    stat.hide();
     render(main, stat);
     render(footerStatistics, new FooterStatistics(0));
   });

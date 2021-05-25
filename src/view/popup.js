@@ -231,10 +231,6 @@ export default class Popup extends Smart {
     return createPopup(this._data, comments);
   }
 
-  getDataId() {
-    return this._data.id;
-  }
-
   show() {
     this._parentElem.classList.add('hide-overflow');
     document.addEventListener('keydown', this._callback.escDown);
@@ -264,6 +260,7 @@ export default class Popup extends Smart {
       isChoosedEmoji: this._data.isChoosedEmoji,
       choosedEmoji: this._data.choosedEmoji,
       commentText: this._data.commentText,
+      commentsData: this._commentsData,
     };
   }
 

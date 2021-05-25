@@ -141,6 +141,8 @@ export default class Stat extends Smart {
     this._data = Object.assign(this._getData(), this._getCheckedRange());
     this._setCharts(this._data);
     this._setRangeFilterChangeHandler();
+    this.updateData(this._data);
+    this._setCharts(this._data);
   }
 
   getTemplate() {
@@ -154,8 +156,8 @@ export default class Stat extends Smart {
 
   _getData() {
     const userRank = this._userRank;
-    const objGenres = {};
-    const arrObjGenres = [];
+    const counterGenres = {};
+    const sortedGenres = [];
     const genres = [];
     const amountGenres = [];
     const watchedFilmsCount = this._filmCards.length;
@@ -163,10 +165,10 @@ export default class Stat extends Smart {
 
     this._filmCards.forEach((filmCard) => {
       filmCard.genres.forEach((genre) => {
-        if (Object.keys(objGenres).includes(genre)) {
-          objGenres[genre]++;
+        if (Object.keys(counterGenres).includes(genre)) {
+          counterGenres[genre]++;
         } else {
-          objGenres[genre] = 1;
+          counterGenres[genre] = 1;
         }
       });
       totalDuration += filmCard.runtime;
@@ -174,12 +176,12 @@ export default class Stat extends Smart {
 
     totalDuration = formatRuntime(totalDuration, true);
 
-    Object.keys(objGenres).forEach((ganre) => {
-      arrObjGenres.push({name: ganre, number: objGenres[ganre]});
+    Object.keys(counterGenres).forEach((ganre) => {
+      sortedGenres.push({name: ganre, number: counterGenres[ganre]});
     });
 
-    arrObjGenres.sort((first, second) => second.number - first.number);
-    arrObjGenres.forEach((genre) => {
+    sortedGenres.sort((first, second) => second.number - first.number);
+    sortedGenres.forEach((genre) => {
       genres.push(genre.name);
       amountGenres.push(genre.number);
     });
