@@ -3,8 +3,8 @@ import Films from '../view/films.js';
 import FilmsList from '../view/films-list.js';
 import FilmsListContainer from '../view/films-list-container.js';
 import ShowMoreButton from '../view/show-more-button.js';
-import Sort from '../view/sort.js';
 import Loading from '../view/loading.js';
+import Sort from '../view/sort.js';
 
 import {filter} from '../utils/filter.js';
 import {render, remove} from '../utils/render.js';
