@@ -7,14 +7,21 @@ import FooterStatistics from './view/footer-statistics.js';
 import NavPresenter from './presenter/nav-presenter.js';
 import {UpdateType, FilterType} from './const.js';
 
-import Api from './api.js';
+import Api from './api/api.js';
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 
 import {render} from './utils/render.js';
 
 const AUTHORIZATION = 'Basic aaaa00001111bbbb';
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
+const STORE_PREFIX = 'cinemaddict-localstorage';
+const STORE_VER = 'v14';
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 
 const userRank = 'Movie Buff';
 
@@ -28,7 +35,7 @@ const main = body.querySelector('.main');
 const footerStatistics = body.querySelector('.footer__statistics');
 
 const navPresenter = new NavPresenter(main, filterModel, moviesModel);
-const movieListPresenter = new MovieList(main, body, moviesModel, filterModel, api);
+const movieListPresenter = new MovieList(main, body, moviesModel, filterModel, apiWithProvider);
 const stat = new Stat(userRank);
 stat.hide();
 
@@ -52,7 +59,7 @@ navPresenter.init();
 movieListPresenter.init();
 navPresenter.setFilterTypeChangeHandler(handleFilterTypeChange);
 
-api.getFilmCards()
+apiWithProvider.getFilmCards()
   .then((response) => {
     render(header, new UserRank(userRank));
     moviesModel.setMovies(UpdateType.INIT, response);
@@ -64,3 +71,16 @@ api.getFilmCards()
     render(main, stat);
     render(footerStatistics, new FooterStatistics(0));
   });
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
+
+window.addEventListener('online', () => {
+  document.title = document.title.replace(' [offline]', '');
+  apiWithProvider.sync();
+});
+
+window.addEventListener('offline', () => {
+  document.title += ' [offline]';
+});
