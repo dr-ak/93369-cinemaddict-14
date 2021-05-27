@@ -1,6 +1,14 @@
 import {humanizeFilmDate, humanizeCommentDate} from '../utils/film.js';
 import Smart from './smart.js';
+import {Key} from '../const.js';
 import he from 'he';
+
+const EMOJIS = {
+  'smile': '../../images/emoji/smile.png',
+  'sleeping': '../../images/emoji/sleeping.png',
+  'puke': '../../images/emoji/puke.png',
+  'angry': '../../images/emoji/angry.png',
+};
 
 const createPopup = (data, comments) => {
   const {title, totalRating, poster, date, runtime, genres, description, watchList, alreadyWatched, favorite, alternativeTitle, ageRating, director, writers, actors, releaseCountry, isDisabled} = data;
@@ -112,19 +120,13 @@ const createPopup = (data, comments) => {
 const createComments = (data, commentsData) => {
   const {isChoosedEmoji, choosedEmoji, commentText, isDisabled} = data;
 
-  const emojis = {
-    'smile': '../../images/emoji/smile.png',
-    'sleeping': '../../images/emoji/sleeping.png',
-    'puke': '../../images/emoji/puke.png',
-    'angry': '../../images/emoji/angry.png',
-  };
-  const choosedEmojiPath = emojis[choosedEmoji];
+  const choosedEmojiPath = EMOJIS[choosedEmoji];
 
   const createCommentsTemplate = (comments) => {
     let template = '';
     for(const data of comments) {
       const {id, author, comment, date, emotion, isDeleting} = data;
-      const emoji = emojis[emotion];
+      const emoji = EMOJIS[emotion];
       const commentDate = humanizeCommentDate(date);
       const deleteButton = isDeleting ? 'Deleting...' : 'Delete';
       template += `<li class="film-details__comment">
@@ -226,6 +228,7 @@ export default class Popup extends Smart {
     this._commentTextInputHandler = this._commentTextInputHandler.bind(this);
     this._deleteCommentClickHandler = this._deleteCommentClickHandler.bind(this);
     this._saveCommentHendler = this._saveCommentHendler.bind(this);
+    this.getState = this.getState.bind(this);
 
     this._setInnerHandlers();
   }
@@ -326,6 +329,10 @@ export default class Popup extends Smart {
     this.getElement().addEventListener('keydown', this._saveCommentHendler);
   }
 
+  getFilmCard() {
+    return Popup.parseDataToFilmCard(this._data);
+  }
+
   _setInnerHandlers() {
     if ( this._isUploadComments) {
       this.getElement()
@@ -360,7 +367,7 @@ export default class Popup extends Smart {
     if (repeat || this._data.commentText.trim() === '') {
       return;
     }
-    if((metaKey || ctrlKey) && key === 'Enter') {
+    if((metaKey || ctrlKey) && key === Key.ENTER) {
 
       const {choosedEmoji, commentText} = this._data;
 
@@ -426,12 +433,13 @@ export default class Popup extends Smart {
   }
 
   static parseDataToFilmCard(data) {
-    delete data.isChoosedEmoji;
-    delete data.choosedEmoji;
-    delete data.commentText;
-    delete data.isDisabled;
+    const filmCard = Object.assign({}, data);
+    delete filmCard.isChoosedEmoji;
+    delete filmCard.choosedEmoji;
+    delete filmCard.commentText;
+    delete filmCard.isDisabled;
 
-    return data;
+    return filmCard;
   }
 }
 

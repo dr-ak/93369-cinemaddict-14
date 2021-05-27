@@ -27,3 +27,15 @@ export const UserAction = {
   DELETE_COMMENT: 'DELETE_COMMENT',
 };
 
+export const UserRank = {
+  NOVICE: 'Novice',
+  FAN: 'Fan',
+  MOVIE_BUFF: 'Movie buff',
+};
+
+export const Key = {
+  ENTER: 'Enter',
+  ESC: 'Esc',
+  ESCAPE: 'Escape',
+};
+

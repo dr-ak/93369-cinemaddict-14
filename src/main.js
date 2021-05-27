@@ -1,4 +1,4 @@
-import UserRank from './view/user-rank.js';
+// import UserRank from './view/user-rank.js';
 import Stat from './view/stat.js';
 import MoviesModel from './model/movies.js';
 import FilterModel from './model/filter.js';
@@ -23,8 +23,6 @@ const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 
-const userRank = 'Movie Buff';
-
 const filterModel = new FilterModel();
 
 const moviesModel = new MoviesModel();
@@ -35,8 +33,8 @@ const main = body.querySelector('.main');
 const footerStatistics = body.querySelector('.footer__statistics');
 
 const navPresenter = new NavPresenter(main, filterModel, moviesModel);
-const movieListPresenter = new MovieList(main, body, moviesModel, filterModel, apiWithProvider);
-const stat = new Stat(userRank);
+const movieListPresenter = new MovieList(header, main, body, moviesModel, filterModel, apiWithProvider);
+const stat = new Stat();
 stat.hide();
 
 const handleFilterTypeChange = (filterType) => {
@@ -61,7 +59,6 @@ navPresenter.setFilterTypeChangeHandler(handleFilterTypeChange);
 
 apiWithProvider.getFilmCards()
   .then((response) => {
-    render(header, new UserRank(userRank));
     moviesModel.setMovies(UpdateType.INIT, response);
     render(main, stat);
     render(footerStatistics, new FooterStatistics(response.length));

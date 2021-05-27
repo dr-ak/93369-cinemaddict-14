@@ -1,13 +1,16 @@
 import {extractYearFromDate, formatRuntime} from '../utils/film.js';
 import AbstractView from './abstract.js';
 
+const MAX_DESCRIPTION_LENGTH = 140;
+const CUT_DESCRIPTION_LENGTH = 139;
+
 export const createFilmCard = (filmCard) => {
   const {title, totalRating, poster, date, runtime, genres, description, comments, watchList, alreadyWatched, favorite} = filmCard;
   const yearFromDate = extractYearFromDate(date);
   const runTime = formatRuntime(runtime);
   const filmGenre = genres[0];
-  const cutDescription = description.length > 140
-    ? description.substr(0, 139) + '...'
+  const cutDescription = description.length > MAX_DESCRIPTION_LENGTH
+    ? description.substr(0, CUT_DESCRIPTION_LENGTH) + '...'
     : description;
   const countComments = comments.length;
   const addTowatchListClassName = watchList

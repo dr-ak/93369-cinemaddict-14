@@ -3,8 +3,25 @@ import {formatRuntime, isWatchDateInto} from '../utils/film.js';
 
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {getUserRank} from '../utils/user.js';
 
 const BAR_HEIGHT = 50;
+
+const ChartsSettings = {
+  TYPE: 'horizontalBar',
+  BACKGROUND_COLLOR: '#ffe800',
+  HOVER_BACKGROUND_COLLOR: '#ffe800',
+  DATA_SETS_ANCHOR: 'start',
+  DATA_LABLES_FONT_SIZE: 20,
+  DATA_LABLES_COLOR: '#ffffff',
+  DATA_LABLES_ANCHOR: 'start',
+  DATA_LABLES_ALIGN: 'start',
+  DATA_LABLES_OFFSET: 40,
+  SCALES_FONT_COLLOR: '#ffffff',
+  SCALES_PADDING: 100,
+  SCALES_FONT_SIZE: 20,
+  SCALES_BAR_THICKNESS: 24,
+};
 
 const TimeRanges = {
   ALL_TIME: 'all-time',
@@ -18,40 +35,40 @@ const createCharts = ({chartsPlace, genres, amountGenres}) => {
   chartsPlace.height = BAR_HEIGHT * genres.length;
   return  new Chart(chartsPlace, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
+    type: ChartsSettings.TYPE,
     data: {
       labels: genres,
       datasets: [{
         data: amountGenres,
-        backgroundColor: '#ffe800',
-        hoverBackgroundColor: '#ffe800',
-        anchor: 'start',
+        backgroundColor: ChartsSettings.BACKGROUND_COLLOR,
+        hoverBackgroundColor: ChartsSettings.HOVER_BACKGROUND_COLLOR,
+        anchor: ChartsSettings.DATA_SETS_ANCHOR,
+        barThickness: ChartsSettings.SCALES_BAR_THICKNESS,
       }],
     },
     options: {
       plugins: {
         datalabels: {
           font: {
-            size: 20,
+            size: ChartsSettings.DATA_LABLES_FONT_SIZE,
           },
-          color: '#ffffff',
-          anchor: 'start',
-          align: 'start',
-          offset: 40,
+          color: ChartsSettings.DATA_LABLES_COLOR,
+          anchor: ChartsSettings.DATA_LABLES_ANCHOR,
+          align: ChartsSettings.DATA_LABLES_ALIGN,
+          offset: ChartsSettings.DATA_LABLES_OFFSET,
         },
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#ffffff',
-            padding: 100,
-            fontSize: 20,
+            fontColor: ChartsSettings.SCALES_FONT_COLLOR,
+            padding: ChartsSettings.SCALES_PADDING,
+            fontSize: ChartsSettings.SCALES_FONT_SIZE,
           },
           gridLines: {
             display: false,
             drawBorder: false,
           },
-          barThickness: 24,
         }],
         xAxes: [{
           ticks: {
@@ -124,9 +141,9 @@ export const createStat = ({userRank, watchedFilmsCount, totalHours, totalMinute
 };
 
 export default class Stat extends Smart {
-  constructor(userRank) {
+  constructor() {
     super();
-    this._userRank = userRank;
+    this._userRank = '';
     this._watchedFilmCards = [];
     this._filmCards = [];
     this._data = {};
@@ -136,6 +153,7 @@ export default class Stat extends Smart {
 
 
   init(filmCards) {
+    this._userRank = getUserRank(filmCards);
     this._watchedFilmCards = filmCards.filter((filmCard) => filmCard.alreadyWatched);
     this._filmCards = this._watchedFilmCards.slice();
     this._data = Object.assign(this._getData(), this._getCheckedRange());
