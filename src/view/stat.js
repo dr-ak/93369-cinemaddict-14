@@ -7,20 +7,26 @@ import {getUserRank} from '../utils/user.js';
 
 const BAR_HEIGHT = 50;
 
-const ChartsSettings = {
-  TYPE: 'horizontalBar',
-  BACKGROUND_COLLOR: '#ffe800',
-  HOVER_BACKGROUND_COLLOR: '#ffe800',
-  DATA_SETS_ANCHOR: 'start',
-  DATA_LABLES_FONT_SIZE: 20,
-  DATA_LABLES_COLOR: '#ffffff',
-  DATA_LABLES_ANCHOR: 'start',
-  DATA_LABLES_ALIGN: 'start',
-  DATA_LABLES_OFFSET: 40,
-  SCALES_FONT_COLLOR: '#ffffff',
-  SCALES_PADDING: 100,
-  SCALES_FONT_SIZE: 20,
-  SCALES_BAR_THICKNESS: 24,
+const CHARTS_TYPE = 'horizontalBar';
+
+const Collors = {
+  BACKGROUND: '#ffe800',
+  HOVER_BACKGROUND: '#ffe800',
+  LABLES: '#ffffff',
+  FONT: '#ffffff',
+};
+
+const Positons = {
+  SETS_ANCHOR: 'start',
+  LABLES_ANCHOR: 'start',
+  LABLES_ALIGN: 'start',
+};
+
+const Sizes = {
+  PADDING: 100,
+  FONT_SIZE: 20,
+  LABLES_OFFSET: 40,
+  BAR_THICKNESS: 24,
 };
 
 const TimeRanges = {
@@ -35,35 +41,35 @@ const createCharts = ({chartsPlace, genres, amountGenres}) => {
   chartsPlace.height = BAR_HEIGHT * genres.length;
   return  new Chart(chartsPlace, {
     plugins: [ChartDataLabels],
-    type: ChartsSettings.TYPE,
+    type: CHARTS_TYPE,
     data: {
       labels: genres,
       datasets: [{
         data: amountGenres,
-        backgroundColor: ChartsSettings.BACKGROUND_COLLOR,
-        hoverBackgroundColor: ChartsSettings.HOVER_BACKGROUND_COLLOR,
-        anchor: ChartsSettings.DATA_SETS_ANCHOR,
-        barThickness: ChartsSettings.SCALES_BAR_THICKNESS,
+        backgroundColor: Collors.BACKGROUND,
+        hoverBackgroundColor: Collors.HOVER_BACKGROUND,
+        anchor: Positons.SETS_ANCHOR,
+        barThickness: Sizes.BAR_THICKNESS,
       }],
     },
     options: {
       plugins: {
         datalabels: {
           font: {
-            size: ChartsSettings.DATA_LABLES_FONT_SIZE,
+            size: Sizes.FONT_SIZE,
           },
-          color: ChartsSettings.DATA_LABLES_COLOR,
-          anchor: ChartsSettings.DATA_LABLES_ANCHOR,
-          align: ChartsSettings.DATA_LABLES_ALIGN,
-          offset: ChartsSettings.DATA_LABLES_OFFSET,
+          color: Collors.LABLES,
+          anchor: Positons.LABLES_ANCHOR,
+          align: Positons.LABLES_ALIGN,
+          offset: Sizes.LABLES_OFFSET,
         },
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: ChartsSettings.SCALES_FONT_COLLOR,
-            padding: ChartsSettings.SCALES_PADDING,
-            fontSize: ChartsSettings.SCALES_FONT_SIZE,
+            fontColor: Collors.FONT,
+            padding: Sizes.PADDING,
+            fontSize: Sizes.FONT_SIZE,
           },
           gridLines: {
             display: false,

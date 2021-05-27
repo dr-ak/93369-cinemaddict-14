@@ -1,19 +1,13 @@
 import {UserRank} from '../const.js';
 
-const WatchedMovies = {
-  NOVICE: 1,
-  FAN: 11,
-  MOVIE_BUFF: 21,
-};
-
 export const getUserRank = (filmCards) => {
   const countWatchedFilmCards = filmCards.filter((filmCard) => filmCard.alreadyWatched).length;
-  if (countWatchedFilmCards < WatchedMovies.NOVICE) {
+  if (countWatchedFilmCards < UserRank.NOVICE.count) {
     return '';
-  } else if (countWatchedFilmCards < WatchedMovies.FAN) {
-    return UserRank.NOVICE;
-  } else if (countWatchedFilmCards < WatchedMovies.MOVIE_BUFF) {
-    return UserRank.FAN;
+  } else if (countWatchedFilmCards < UserRank.FAN.count) {
+    return UserRank.NOVICE.name;
+  } else if (countWatchedFilmCards < UserRank.MOVIE_BUFF.count) {
+    return UserRank.FAN.name;
   }
-  return UserRank.MOVIE_BUFF;
+  return UserRank.MOVIE_BUFF.name;
 };

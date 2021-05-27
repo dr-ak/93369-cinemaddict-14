@@ -45,11 +45,11 @@ export default class MovieList {
     this._showMoreButtonComponent = null;
     this._popupComponent = null;
     this._popupActiveState = null;
-    this._userRankCompanent = null;
+    this._userRankComponent = null;
 
-    this._filmsCompanent = new Films();
-    this._filmsListCompanent = new FilmsList();
-    this._filmsListContainerCompanent = new FilmsListContainer();
+    this._filmsComponent = new Films();
+    this._filmsListComponent = new FilmsList();
+    this._filmsListContainerComponent = new FilmsListContainer();
     this._noFilmsListComponent = new FilmsList(EMPTY_LIST_TITLE);
     this._topRatedFilmsListComponent = new FilmsList(TOP_RATED_LIST_TITLE, TOP_RATED_LIST_ID);
     this._topRatedFilmsListContainerComponent = new FilmsListContainer();
@@ -82,12 +82,12 @@ export default class MovieList {
 
   show() {
     this._sortComponent.show();
-    this._filmsCompanent.show();
+    this._filmsComponent.show();
   }
 
   hide() {
     this._sortComponent.hide();
-    this._filmsCompanent.hide();
+    this._filmsComponent.hide();
   }
 
   _resetPopup() {
@@ -160,11 +160,11 @@ export default class MovieList {
       this._popupActiveState.commentsData = commentsData;
     }
 
-    remove(this._userRankCompanent);
+    remove(this._userRankComponent);
     remove(this._sortComponent);
-    remove(this._filmsCompanent);
-    remove(this._filmsListCompanent);
-    remove(this._filmsListContainerCompanent);
+    remove(this._filmsComponent);
+    remove(this._filmsListComponent);
+    remove(this._filmsListContainerComponent);
     remove(this._noFilmsListComponent);
 
     if(resetRenderedFilmsCount) {
@@ -192,20 +192,20 @@ export default class MovieList {
 
     this._showMoreButtonComponent = new ShowMoreButton();
     this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
-    render(this._filmsListCompanent, this._showMoreButtonComponent);
+    render(this._filmsListComponent, this._showMoreButtonComponent);
   }
 
   _renderNoFilms() {
-    render(this._filmsContainer, this._filmsCompanent);
-    render(this._filmsCompanent, this._noFilmsListComponent);
+    render(this._filmsContainer, this._filmsComponent);
+    render(this._filmsComponent, this._noFilmsListComponent);
     this._renderTopRatedList();
     this._renderMostCommentedList();
   }
 
   _renderFilms() {
-    render(this._filmsContainer, this._filmsCompanent);
-    render(this._filmsCompanent, this._filmsListCompanent);
-    render(this._filmsListCompanent, this._filmsListContainerCompanent);
+    render(this._filmsContainer, this._filmsComponent);
+    render(this._filmsComponent, this._filmsListComponent);
+    render(this._filmsListComponent, this._filmsListContainerComponent);
     this._renderFilmsList(0, Math.min(this._getMovies().length, this._renderedFilmsCount));
     if (this._getMovies().length > this._renderedFilmsCount) {
       this._renderShowMoreButton();
@@ -218,7 +218,7 @@ export default class MovieList {
   _renderTopRatedList() {
     const filmCards = this._getTopRatedList();
     if (filmCards.length) {
-      render(this._filmsCompanent, this._topRatedFilmsListComponent);
+      render(this._filmsComponent, this._topRatedFilmsListComponent);
       render(this._topRatedFilmsListComponent, this._topRatedFilmsListContainerComponent);
       filmCards.forEach((filmCard) => this._renderFilmCard(
         filmCard,
@@ -231,7 +231,7 @@ export default class MovieList {
   _renderMostCommentedList() {
     const filmCards = this._getMostCommentedList();
     if (filmCards.length) {
-      render(this._filmsCompanent, this._mostCommentedFilmsListComponent);
+      render(this._filmsComponent, this._mostCommentedFilmsListComponent);
       render(this._mostCommentedFilmsListComponent, this._mostCommentedFilmsListContainerComponent);
       filmCards.forEach((filmCard) => this._renderFilmCard(
         filmCard,
@@ -247,7 +247,7 @@ export default class MovieList {
       .forEach((filmCard) => this._renderFilmCard(filmCard));
   }
 
-  _renderFilmCard(filmCard, container = this._filmsListContainerCompanent, presenter = this._presenters.moviesPresenter) {
+  _renderFilmCard(filmCard, container = this._filmsListContainerComponent, presenter = this._presenters.moviesPresenter) {
     const moviePresenter = new Movie(
       container,
       this._handleShowPopup,
@@ -280,8 +280,8 @@ export default class MovieList {
   }
 
   _renderUserRank() {
-    this._userRankCompanent = new UserRank(getUserRank(this._moviesModel.getMovies()));
-    render(this._userContainer, this._userRankCompanent);
+    this._userRankComponent = new UserRank(getUserRank(this._moviesModel.getMovies()));
+    render(this._userContainer, this._userRankComponent);
   }
 
   _renderFilmsBoard() {
@@ -461,7 +461,7 @@ export default class MovieList {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === Key.ESCAPE || evt.key === Key.ESC) {
+    if (evt.key === Key.ESCAPE) {
       evt.preventDefault();
       this._resetPopup();
     }

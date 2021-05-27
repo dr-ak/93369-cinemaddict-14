@@ -28,14 +28,13 @@ export const UserAction = {
 };
 
 export const UserRank = {
-  NOVICE: 'Novice',
-  FAN: 'Fan',
-  MOVIE_BUFF: 'Movie buff',
+  NOVICE: {count: 1, name: 'Novice'},
+  FAN: {count: 11, name: 'Fan'},
+  MOVIE_BUFF: {count: 21, name: 'Movie buff'},
 };
 
 export const Key = {
   ENTER: 'Enter',
-  ESC: 'Esc',
   ESCAPE: 'Escape',
 };
 

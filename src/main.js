@@ -1,4 +1,3 @@
-// import UserRank from './view/user-rank.js';
 import Stat from './view/stat.js';
 import MoviesModel from './model/movies.js';
 import FilterModel from './model/filter.js';

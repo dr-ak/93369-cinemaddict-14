@@ -1,7 +1,7 @@
 import {createElement} from '../utils/render.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
-const MSEC_INTO_SEC = 1000;
+const MS_IN_SEC = 1000;
 
 
 export default class Abstract {
@@ -39,7 +39,7 @@ export default class Abstract {
   }
 
   shake(callback, element = this.getElement()) {
-    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MSEC_INTO_SEC}s`;
+    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MS_IN_SEC}s`;
     setTimeout(() => {
       element.style.animation = '';
       callback();
